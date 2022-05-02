@@ -41,7 +41,7 @@ firewall_c_general_filter(void *priv, struct sk_buff *skb,
 {
 	struct list_head *listh;
 	struct rule_node *node;
-	struct firewall_c_rule *rule;
+	struct firewall_c_rule *r;
 	struct iphdr *iph;
 	struct tcphdr *tcph;
 	struct udphdr *udph;
@@ -79,20 +79,20 @@ firewall_c_general_filter(void *priv, struct sk_buff *skb,
 	/* Loop through the rule list and perform exact match */
 	listh = rule_list_head;
 	list_for_each_entry(node, listh, list) {
-		
-		if(!IGNORE(rule->proto) && (rule->proto != iph->protocol))
+		r = &node->rule;
+		if(!IGNORE(r->proto) && (r->proto != iph->protocol))
 			continue;
 
-		if(!IGNORE(rule->s_ip) && !EQUAL_NET_ADDR(rule->s_ip, s_ip, rule->s_mask))
+		if(!IGNORE(r->s_ip) && !EQUAL_NET_ADDR(r->s_ip, s_ip, r->s_mask))
 			continue;
 
-		if(!IGNORE(rule->s_port) && (rule->s_port != s_port))
+		if(!IGNORE(r->s_port) && (r->s_port != s_port))
 			continue;
 
-		if(!IGNORE(rule->d_ip) && !EQUAL_NET_ADDR(rule->d_ip, d_ip, rule->s_mask))
+		if(!IGNORE(r->d_ip) && !EQUAL_NET_ADDR(r->d_ip, d_ip, r->s_mask))
 			continue;
 
-		if(!IGNORE(rule->d_port) && (rule->d_port != d_port))
+		if(!IGNORE(r->d_port) && (r->d_port != d_port))
 			continue;
 
 		printk(KERN_INFO "Firewall_C: Drop packet "
